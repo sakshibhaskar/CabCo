@@ -1,6 +1,24 @@
 import 'package:flutter/material.dart';
-import 'package:your_project/services/auth.dart';
-import 'sign_in.dart'; // Import the sign-in screen
+
+void main() {
+  runApp(MyApp());
+}
+
+class MyApp extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      debugShowCheckedModeBanner: false,
+      title: 'Flutter Sign-Up',
+      theme: ThemeData(primarySwatch: Colors.blue),
+      home: RegisterPage(),
+      routes: {
+        '/dashboard': (context) => DashboardPage(),
+        '/sign_in': (context) => SignInPage(),
+      },
+    );
+  }
+}
 
 class RegisterPage extends StatefulWidget {
   @override
@@ -13,56 +31,49 @@ class _RegisterPageState extends State<RegisterPage> {
   final TextEditingController _passwordController = TextEditingController();
   bool _isLoading = false;
 
-  Future<void> _register() async {
+  void _register() {
     setState(() {
       _isLoading = true;
     });
 
-    final result = await AuthService().registerUser(
-      _nameController.text,
-      _emailController.text,
-      _passwordController.text,
-    );
+    Future.delayed(Duration(seconds: 2), () {
+      setState(() {
+        _isLoading = false;
+      });
 
-    setState(() {
-      _isLoading = false;
-    });
-
-    if (result != null) {
-      // Successfully registered, navigate to Dashboard
-      Navigator.pushReplacementNamed(context, '/dashboard');
-    } else {
-      // Display error message
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Registration failed. Please try again!')),
+        SnackBar(content: Text('Registration Successful!')),
       );
-    }
+
+      Navigator.pushReplacementNamed(context, '/dashboard');
+    });
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Register')),
+      appBar: AppBar(title: Text('Sign Up')),
       body: Padding(
-        padding: EdgeInsets.symmetric(horizontal: 16.0),
+        padding: EdgeInsets.all(16.0),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             TextField(
               controller: _nameController,
               decoration: InputDecoration(labelText: 'Full Name'),
             ),
+            SizedBox(height: 10),
             TextField(
               controller: _emailController,
               decoration: InputDecoration(labelText: 'Email/Phone'),
             ),
+            SizedBox(height: 10),
             TextField(
               controller: _passwordController,
               obscureText: true,
               decoration: InputDecoration(labelText: 'Password'),
             ),
-            SizedBox(height: 16),
+            SizedBox(height: 20),
             ElevatedButton(
               onPressed: _isLoading ? null : _register,
               child: _isLoading
@@ -73,13 +84,10 @@ class _RegisterPageState extends State<RegisterPage> {
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Text("Already have an account?"),
+                Text("Already have an account? "),
                 TextButton(
                   onPressed: () {
-                    Navigator.pushReplacement(
-                      context,
-                      MaterialPageRoute(builder: (context) => SignInPage()),
-                    );
+                    Navigator.pushReplacementNamed(context, '/sign_in');
                   },
                   child: Text('Sign In'),
                 ),
@@ -88,6 +96,26 @@ class _RegisterPageState extends State<RegisterPage> {
           ],
         ),
       ),
+    );
+  }
+}
+
+class DashboardPage extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: Text('Dashboard')),
+      body: Center(child: Text('Welcome to Dashboard!')),
+    );
+  }
+}
+
+class SignInPage extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: Text('Sign In')),
+      body: Center(child: Text('Sign In Page')),
     );
   }
 }
